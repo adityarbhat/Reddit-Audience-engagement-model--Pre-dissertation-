@@ -1,0 +1,139 @@
+---
+title: "Initial_Summary"
+author: "Aditya"
+date: "4/15/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(ggplot2)
+reddit1900=read.csv("/Users/adityabhat/Downloads/Datasets/Reddit_Dataset.csv")
+```
+
+### Number of Unique Stories
+```{r}
+length(unique(reddit1900$id))
+```
+
+### % of Unique stories
+```{r}
+
+(length(unique(reddit1900$id))/nrow(reddit1900))*100
+
+```
+
+
+```{r}
+#unique_visitors=as.data.frame(unique(reddit1900$active_users))
+active_users=read.csv("/Users/adityabhat/Downloads/Datasets/Visitors.csv")
+```
+### Unique Visitors between Night and Day
+```{r}
+ggplot(active_users,aes(x=Date,y=Active_Users,group=TimeOfDay))+geom_line(aes(color=TimeOfDay))+geom_point(aes(color=TimeOfDay))+theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7, angle=90))
+```
+
+### T-Test to check for signifance in the no of active users between day and night
+```{r}
+t.test(active_users$Active_Users~active_users$TimeOfDay)
+```
+
+### No of unique Visitors Between Weekend and Weekdays
+```{r}
+ggplot(active_users,aes(x=Date,y=Active_Users,group=TypeOfDay))+geom_line(aes(color=TypeOfDay))+geom_point(aes(color=TypeOfDay))+theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7, angle=90))
+```
+### No of unique Visitors Between Weekend and Weekdays (Bar plot)
+```{r}
+ggplot(active_users,aes(x=Date,y=Active_Users))+geom_point()+facet_wrap(~TypeOfDay)+theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7, angle=90))
+```
+
+```{r}
+### code to get dataset of only unique rows
+#reddit_unique=reddit1900[!duplicated(reddit1900[, c("id")]),]
+reddit_unique=read.csv("/Users/adityabhat/Downloads/Datasets/Reddit_Unique.csv")
+```
+### Length of the articles ( Less than 500 words is short and greater than 500 words is Long)
+```{r}
+ggplot(reddit_unique,aes(x=DocLen))+geom_bar(fill="steelblue")+
+   theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7, angle=90))
+  
+```
+
+### Type of News Organization
+```{r}
+ggplot(reddit_unique,aes(x=SourceType))+geom_bar(fill="steelblue")+
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7, angle=90))
+```
+
+### Importance of Stories
+```{r,warning=FALSE}
+ggplot(reddit1900,aes(x=Repeated))+geom_bar(fill="steelblue")+
+  theme(axis.text.x = element_text(face="bold", color="#993333", 
+                           size=7))
+```
+
+### % of Stories with Social Media Postings
+```{r}
+sm=subset(reddit_unique,reddit_unique$Social_Media>0)
+(nrow(sm)/nrow(reddit_unique))*100
+```
+
+### % of Stories with atleast 1 Video
+```{r}
+video_1=subset(reddit_unique,reddit_unique$Videos>0)
+(nrow(video_1)/nrow(reddit_unique))*100
+```
+
+### % of Stories with multiple Videos
+```{r}
+video_1plus=subset(reddit_unique,reddit_unique$Videos>=2)
+(nrow(video_1plus)/nrow(reddit_unique))*100
+```
+
+### % of Stories with atleast 1 image
+```{r}
+photo1=subset(reddit_unique,reddit_unique$Images>0)
+(nrow(photo1)/nrow(reddit_unique))*100
+```
+
+### % of Stories with multiple images
+```{r}
+photo1plus=subset(reddit_unique,reddit_unique$Images>1)
+(nrow(photo1plus)/nrow(reddit_unique))*100
+```
+
+### Main Topics of articles with Social Media embeddings
+
+```{r}
+summary(sm$Topic1,maxsum = 5)
+```
+
+### Main topics in general
+```{r}
+summary(reddit_unique$Topic1,maxsum = 5)
+```
+
+### Average number of pictures in articles
+```{r}
+
+mean(reddit_unique$Images,na.rm=T)
+```
+
+### Average length of video in articles (Seconds)
+```{r}
+mean(reddit_unique$Video_Len,na.rm=T)
+```
+
+### Average social media embeddings in articles
+```{r}
+mean(reddit_unique$Social_Media)
+```
+
